@@ -13,8 +13,8 @@ import (
 )
 
 type Config struct {
-	baseFolder string            `json:"baseFolder"`
-	watchList  map[string]string `json:"watchList"`
+	BaseFolder string            `json:"baseFolder"`
+	WatchList  map[string]string `json:"watchList"`
 }
 
 func readConfig(filename string) (*Config, error) {
@@ -35,6 +35,7 @@ func readConfig(filename string) (*Config, error) {
 }
 
 func handleFile(srcFilename string, destFilename string) {
+	log.Println("Open file ", srcFilename, "to read")
 	srcFile, err := os.Open(srcFilename)
 	if err != nil {
 		log.Println("error occurs: ", err)
@@ -70,7 +71,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := watcher.Watch(config.baseFolder); err != nil {
+	if err := watcher.Watch(config.BaseFolder); err != nil {
 		log.Fatal(err)
 	}
 
@@ -79,10 +80,13 @@ func main() {
 	for {
 		select {
 		case ev := <-watcher.Event:
-			log.Println("file ", ev.Name, ev.IsModify())
+			log.Println("file ", ev.Name, "changed")
 			_, srcName := path.Split(ev.Name)
-			destFilename, ok := config.watchList[srcName]
+			destFilename, ok := config.WatchList[srcName]
 			if ok {
+				if !path.IsAbs(destFilename) {
+					destFilename = path.Join(config.BaseFolder, destFilename)
+				}
 				handleFile(ev.Name, destFilename)
 			}
 		case err := <-watcher.Error:
