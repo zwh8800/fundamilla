@@ -1,0 +1,7 @@
+{
+  "baseFolder": "/Users/zzz/go/src/code.meican.com/diffusion/MIS/archangel.git/public/mealReports/",
+  "watchList": {
+    "main.bundle.css": "/Users/zzz/java-dev/meican-web/public/stylesheets/mealreports.spa/corp_meal_reports.spa.css",
+    "main.bundle.js": "/Users/zzz/java-dev/meican-web/public/javascripts/mealreports.spa/corp_meal_reports.spa.js"
+  }
+}

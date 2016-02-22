@@ -1,18 +1,37 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
+	"path"
 
 	"github.com/howeyc/fsnotify"
 )
 
-const baseFolder = "/Users/zzz/go/src/code.meican.com/diffusion/MIS/archangel.git/public/mealReports/"
+type Config struct {
+	baseFolder string            `json:"baseFolder"`
+	watchList  map[string]string `json:"watchList"`
+}
 
-var watchList = map[string]string{
-	"/Users/zzz/go/src/code.meican.com/diffusion/MIS/archangel.git/public/mealReports/main.bundle.css": "/Users/zzz/java-dev/meican-web/public/stylesheets/mealreports.spa/corp_meal_reports.spa.css",
-	"/Users/zzz/go/src/code.meican.com/diffusion/MIS/archangel.git/public/mealReports/main.bundle.js":  "/Users/zzz/java-dev/meican-web/public/javascripts/mealreports.spa/corp_meal_reports.spa.js",
+func readConfig(filename string) (*Config, error) {
+	configFile, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	configData, err := ioutil.ReadAll(configFile)
+	if err != nil {
+		return nil, err
+	}
+	var config Config
+	if err := json.Unmarshal(configData, &config); err != nil {
+		return nil, err
+	}
+
+	return &config, nil
 }
 
 func handleFile(srcFilename string, destFilename string) {
@@ -38,12 +57,20 @@ func handleFile(srcFilename string, destFilename string) {
 }
 
 func main() {
+	configFile := flag.String("config", "watchlist.json", "specify a watchlist")
+	flag.Parse()
+
+	config, err := readConfig(*configFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err := watcher.Watch(baseFolder); err != nil {
+	if err := watcher.Watch(config.baseFolder); err != nil {
 		log.Fatal(err)
 	}
 
@@ -53,7 +80,8 @@ func main() {
 		select {
 		case ev := <-watcher.Event:
 			log.Println("file ", ev.Name, ev.IsModify())
-			destFilename, ok := watchList[ev.Name]
+			_, srcName := path.Split(ev.Name)
+			destFilename, ok := config.watchList[srcName]
 			if ok {
 				handleFile(ev.Name, destFilename)
 			}
