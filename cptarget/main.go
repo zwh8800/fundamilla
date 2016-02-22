@@ -1,17 +1,18 @@
 package main
 
 import (
-	"github.com/howeyc/fsnotify"
+	"io"
 	"log"
 	"os"
-	"io"
+
+	"github.com/howeyc/fsnotify"
 )
 
 const baseFolder = "/Users/zzz/go/src/code.meican.com/diffusion/MIS/archangel.git/public/mealReports/"
 
-var watchList = map[string]string {
+var watchList = map[string]string{
 	"/Users/zzz/go/src/code.meican.com/diffusion/MIS/archangel.git/public/mealReports/main.bundle.css": "/Users/zzz/java-dev/meican-web/public/stylesheets/mealreports.spa/corp_meal_reports.spa.css",
-	"/Users/zzz/go/src/code.meican.com/diffusion/MIS/archangel.git/public/mealReports/main.bundle.js": "/Users/zzz/java-dev/meican-web/public/javascripts/mealreports.spa/corp_meal_reports.spa.js",
+	"/Users/zzz/go/src/code.meican.com/diffusion/MIS/archangel.git/public/mealReports/main.bundle.js":  "/Users/zzz/java-dev/meican-web/public/javascripts/mealreports.spa/corp_meal_reports.spa.js",
 }
 
 func handleFile(srcFilename string, destFilename string) {
@@ -21,7 +22,7 @@ func handleFile(srcFilename string, destFilename string) {
 	}
 	defer srcFile.Close()
 	log.Println("Open file ", destFilename, "to write")
-	destFile, err := os.OpenFile(destFilename, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0644)
+	destFile, err := os.OpenFile(destFilename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Println("error occurs: ", err)
 	}
