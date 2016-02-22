@@ -19,17 +19,20 @@ func handleFile(srcFilename string, destFilename string) {
 	srcFile, err := os.Open(srcFilename)
 	if err != nil {
 		log.Println("error occurs: ", err)
+		return
 	}
 	defer srcFile.Close()
 	log.Println("Open file ", destFilename, "to write")
 	destFile, err := os.OpenFile(destFilename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Println("error occurs: ", err)
+		return
 	}
 	defer destFile.Close()
 	n, err := io.Copy(destFile, srcFile)
 	if err != nil {
 		log.Println("error occurs: ", err)
+		return
 	}
 	log.Println(n, "bytes copyed")
 }
