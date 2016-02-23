@@ -7,9 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
-
 	"os/signal"
+	"path"
 
 	"github.com/howeyc/fsnotify"
 )
